@@ -13,6 +13,7 @@ import { Link, useRouter } from "expo-router";
 import NetInfo from "@react-native-community/netinfo";
 import { useLocationStore } from "@/store/useLocationStore";
 import { useContactsStore } from "@/store/useContactStore";
+import { useThemeStore } from "@/store/useThemeStore";
 import { sendPanic } from "@/services/api";
 import { sendSMSDirectly } from "@/services/offline";
 import PanicButton from "@/components/PanicButton";
@@ -20,6 +21,7 @@ import PanicButton from "@/components/PanicButton";
 export default function HomeScreen() {
   const { location, errorMsg, requestLocation } = useLocationStore();
   const { name, setname, contacts } = useContactsStore();
+  const { theme, isDarkMode } = useThemeStore();
   const [isOnline, setIsOnline] = useState(true);
   const [nameInput, setNameInput] = useState(name);
   const [isEditingName, setIsEditingName] = useState(!name); // show name input if name doesn't exist
@@ -158,30 +160,51 @@ export default function HomeScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar style="auto" />
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <StatusBar style={isDarkMode ? "light" : "dark"} />
 
-      <View style={styles.header}>
-        <Text style={styles.title}>
+      <View
+        style={[styles.header, { backgroundColor: theme.headerBackground }]}
+      >
+        <Text style={[styles.title, { color: theme.headerText }]}>
           {name ? `Hello, ${name}` : "Hello, Guest"}
         </Text>
-        <Text style={styles.subtitle}>Stay safe with your panic button</Text>
+        <Text style={[styles.subtitle, { color: theme.headerText }]}>
+          Stay safe with your panic button
+        </Text>
 
         {!isOnline && <Text style={styles.offlineText}>OFFLINE MODE</Text>}
       </View>
 
       {isEditingName && (
-        <View style={styles.userInfoContainer}>
-          <Text style={styles.welcomeText}>Welcome to the Emergency App!</Text>
-          <Text style={styles.setupText}>Let's set up your profile first:</Text>
-          <Text style={styles.label}>Your Name:</Text>
+        <View
+          style={[styles.userInfoContainer, { backgroundColor: theme.card }]}
+        >
+          <Text style={[styles.welcomeText, { color: theme.text }]}>
+            Welcome to the Emergency App!
+          </Text>
+          <Text style={[styles.setupText, { color: theme.text }]}>
+            Let's set up your profile first:
+          </Text>
+          <Text style={[styles.label, { color: theme.text }]}>Your Name:</Text>
           <TextInput
-            style={styles.input}
+            style={[
+              styles.input,
+              {
+                backgroundColor: theme.inputBackground,
+                borderColor: theme.border,
+                color: theme.text,
+              },
+            ]}
             value={nameInput}
             onChangeText={setNameInput}
             placeholder="Enter your name"
+            placeholderTextColor={isDarkMode ? "#999" : "#777"}
           />
-          <TouchableOpacity style={styles.saveButton} onPress={handleSaveName}>
+          <TouchableOpacity
+            style={[styles.saveButton, { backgroundColor: theme.primary }]}
+            onPress={handleSaveName}
+          >
             <Text style={styles.saveButtonText}>Save</Text>
           </TouchableOpacity>
         </View>
@@ -189,9 +212,13 @@ export default function HomeScreen() {
 
       {!isEditingName && (
         <>
-          <View style={styles.locationContainer}>
-            <Text style={styles.label}>Location Status:</Text>
-            <Text style={styles.locationText}>
+          <View
+            style={[styles.locationContainer, { backgroundColor: theme.card }]}
+          >
+            <Text style={[styles.label, { color: theme.text }]}>
+              Location Status:
+            </Text>
+            <Text style={[styles.locationText, { color: theme.text }]}>
               {location
                 ? `✅ Location available`
                 : errorMsg
@@ -204,14 +231,16 @@ export default function HomeScreen() {
             <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
               <PanicButton
                 onPress={handlePanic}
-                disabled={!location}
+                disabled={!location || isPanicActive}
                 isActive={isPanicActive}
               />
             </Animated.View>
           </View>
 
-          <View style={styles.statusContainer}>
-            <Text style={styles.statusText}>
+          <View
+            style={[styles.statusContainer, { backgroundColor: theme.card }]}
+          >
+            <Text style={[styles.statusText, { color: theme.text }]}>
               {contacts.length > 0
                 ? `✅ ${contacts.length} emergency contacts`
                 : "❌ No emergency contacts"}
@@ -226,21 +255,17 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
   },
   header: {
     padding: 20,
     paddingTop: 60,
-    backgroundColor: "#e74c3c",
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#fff",
   },
   subtitle: {
     fontSize: 16,
-    color: "#fff",
     marginTop: 5,
   },
   offlineText: {
@@ -254,7 +279,6 @@ const styles = StyleSheet.create({
   },
   userInfoContainer: {
     padding: 20,
-    backgroundColor: "#f8f8f8",
     margin: 20,
     borderRadius: 10,
   },
@@ -272,15 +296,12 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   input: {
-    backgroundColor: "#fff",
     borderRadius: 5,
     padding: 10,
     borderWidth: 1,
-    borderColor: "#ddd",
     fontSize: 16,
   },
   saveButton: {
-    backgroundColor: "#e74c3c",
     borderRadius: 5,
     padding: 12,
     alignItems: "center",
@@ -294,7 +315,6 @@ const styles = StyleSheet.create({
   locationContainer: {
     padding: 20,
     margin: 20,
-    backgroundColor: "#f8f8f8",
     borderRadius: 10,
   },
   locationText: {
@@ -308,7 +328,6 @@ const styles = StyleSheet.create({
   statusContainer: {
     padding: 20,
     margin: 20,
-    backgroundColor: "#f8f8f8",
     borderRadius: 10,
     alignItems: "center",
   },

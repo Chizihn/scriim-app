@@ -1,8 +1,11 @@
 import { Contact } from "@/store/useContactStore";
 import axios from "axios";
 
+const PROD_API = "https://scriim-api.vercel.app/api";
+const DEV_API = "http://192.168.14.2:5000/api";
+
 // Replace with your actual backend URL
-const API_URL = "http://192.168.14.2:5000/api";
+const API_URL = process.env.NODE_ENV !== "development" ? PROD_API : DEV_API;
 
 const api = axios.create({
   baseURL: API_URL,

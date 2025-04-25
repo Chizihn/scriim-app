@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Modal } from "react-native";
 import * as Location from "expo-location";
 import { useLocationStore } from "../store/useLocationStore";
+import { useThemeStore } from "@/store/useThemeStore";
 
 const LocationPermission: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const { location, requestLocation } = useLocationStore();
+  const { theme, isDarkMode } = useThemeStore();
 
   useEffect(() => {
     checkLocationPermission();
@@ -31,19 +33,29 @@ const LocationPermission: React.FC = () => {
       onRequestClose={() => setModalVisible(false)}
     >
       <View style={styles.centeredView}>
-        <View style={styles.modalView}>
-          <Text style={styles.modalTitle}>Location Access Required</Text>
-          <Text style={styles.modalText}>
+        <View style={[styles.modalView, { backgroundColor: theme.card }]}>
+          <Text style={[styles.modalTitle, { color: theme.text }]}>
+            Location Access Required
+          </Text>
+          <Text
+            style={[styles.modalText, { color: isDarkMode ? "#aaa" : "#555" }]}
+          >
             This app needs access to your location to send accurate emergency
             alerts. Your location will only be shared when you press the panic
             button.
           </Text>
           <View style={styles.buttonContainer}>
             <TouchableOpacity
-              style={[styles.button, styles.buttonCancel]}
+              style={[
+                styles.button,
+                styles.buttonCancel,
+                { borderColor: theme.border },
+              ]}
               onPress={() => setModalVisible(false)}
             >
-              <Text style={styles.buttonCancelText}>Later</Text>
+              <Text style={[styles.buttonCancelText, { color: theme.text }]}>
+                Later
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.button, styles.buttonAllow]}
@@ -67,7 +79,6 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
-    backgroundColor: "white",
     borderRadius: 20,
     padding: 25,
     alignItems: "center",
@@ -86,14 +97,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 15,
     textAlign: "center",
-    color: "#333",
   },
   modalText: {
     marginBottom: 20,
     textAlign: "center",
     fontSize: 16,
     lineHeight: 24,
-    color: "#555",
   },
   buttonContainer: {
     flexDirection: "row",
@@ -111,9 +120,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#4CAF50",
   },
   buttonCancel: {
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "transparent",
     borderWidth: 1,
-    borderColor: "#ddd",
   },
   buttonAllowText: {
     color: "white",
@@ -121,7 +129,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   buttonCancelText: {
-    color: "#555",
     fontSize: 16,
   },
 });

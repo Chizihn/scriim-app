@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "scriim",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
@@ -9,7 +9,10 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "build:android": "eas build -p android --profile production",
+    "build:android:aab": "eas build -p android --profile production",
+    "optimize-assets": "npx sharp-cli --input ./assets/images --output ./assets/images/optimized --resize 50%"
   },
   "jest": {
     "preset": "jest-expo"

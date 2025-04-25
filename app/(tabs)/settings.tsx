@@ -33,27 +33,68 @@ export default function SettingsScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <StatusBar style="auto" />
+      <StatusBar style={isDarkMode ? "light" : "dark"} />
 
-      <View style={styles.header}>
-        <Text style={styles.title}>Settings</Text>
-        <Text style={styles.subtitle}>Manage your personal information</Text>
+      <View
+        style={[styles.header, { backgroundColor: theme.headerBackground }]}
+      >
+        <Text style={[styles.title, { color: theme.headerText }]}>
+          Settings
+        </Text>
+        <Text style={[styles.subtitle, { color: theme.headerText }]}>
+          Manage your personal information
+        </Text>
       </View>
 
       <ScrollView style={styles.content}>
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Personal Information</Text>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>
+            Appearance
+          </Text>
+          <View
+            style={[styles.inputContainer, { backgroundColor: theme.card }]}
+          >
+            <View style={styles.themeToggleContainer}>
+              <Text style={[styles.label, { color: theme.text }]}>
+                Dark Mode
+              </Text>
+              <Switch
+                value={isDarkMode}
+                onValueChange={toggleTheme}
+                trackColor={{ false: "#767577", true: theme.primary }}
+                thumbColor="#f4f3f4"
+              />
+            </View>
+          </View>
+        </View>
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Your Name:</Text>
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>
+            Personal Information
+          </Text>
+
+          <View
+            style={[styles.inputContainer, { backgroundColor: theme.card }]}
+          >
+            <Text style={[styles.label, { color: theme.text }]}>
+              Your Name:
+            </Text>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: theme.inputBackground,
+                  borderColor: theme.border,
+                  color: theme.text,
+                },
+              ]}
               value={nameInput}
               onChangeText={setNameInput}
               placeholder="Enter your name"
+              placeholderTextColor={isDarkMode ? "#999" : "#777"}
             />
             <TouchableOpacity
-              style={styles.saveButton}
+              style={[styles.saveButton, { backgroundColor: theme.primary }]}
               onPress={handleSaveName}
             >
               <Text style={styles.saveButtonText}>Save</Text>
@@ -62,20 +103,27 @@ export default function SettingsScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>About</Text>
-          <Text style={styles.aboutText}>
-            This app helps you quickly contact emergency services and your
-            emergency contacts.
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>
+            About
           </Text>
-          <Text style={styles.versionText}>Version 1.0.0</Text>
+          <View
+            style={[styles.inputContainer, { backgroundColor: theme.card }]}
+          >
+            <Text style={[styles.aboutText, { color: theme.text }]}>
+              This app helps you quickly contact emergency services and your
+              emergency contacts.
+            </Text>
+            <Text
+              style={[
+                styles.versionText,
+                { color: isDarkMode ? "#888" : "#888" },
+              ]}
+            >
+              Version 1.0.0
+            </Text>
+          </View>
         </View>
       </ScrollView>
-      <Switch
-        value={isDarkMode}
-        onValueChange={toggleTheme}
-        trackColor={{ false: "#767577", true: "#e74c3c" }}
-        thumbColor="#f4f3f4"
-      />
     </View>
   );
 }
@@ -83,21 +131,17 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
   },
   header: {
     padding: 20,
     paddingTop: 60,
-    backgroundColor: "#e74c3c",
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#fff",
   },
   subtitle: {
     fontSize: 16,
-    color: "#fff",
     marginTop: 5,
   },
   content: {
@@ -113,24 +157,25 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   inputContainer: {
-    backgroundColor: "#f8f8f8",
     borderRadius: 10,
     padding: 15,
+  },
+  themeToggleContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   label: {
     fontSize: 16,
     marginBottom: 8,
   },
   input: {
-    backgroundColor: "#fff",
     borderRadius: 5,
     padding: 10,
     borderWidth: 1,
-    borderColor: "#ddd",
     fontSize: 16,
   },
   saveButton: {
-    backgroundColor: "#e74c3c",
     borderRadius: 5,
     padding: 12,
     alignItems: "center",
@@ -148,6 +193,5 @@ const styles = StyleSheet.create({
   },
   versionText: {
     fontSize: 14,
-    color: "#888",
   },
 });

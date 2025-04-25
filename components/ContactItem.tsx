@@ -1,6 +1,7 @@
 import { Contact } from "@/store/useContactStore";
 import React from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { useThemeStore } from "@/store/useThemeStore";
 
 interface ContactItemProps {
   contact: Contact;
@@ -8,15 +9,19 @@ interface ContactItemProps {
 }
 
 const ContactItem: React.FC<ContactItemProps> = ({ contact, onDelete }) => {
+  const { theme, isDarkMode } = useThemeStore();
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.card }]}>
       <View style={styles.infoContainer}>
-        <Text style={styles.name}>{contact.name}</Text>
-        <Text style={styles.phone}>{contact.phoneNumber}</Text>
+        <Text style={[styles.name, { color: theme.text }]}>{contact.name}</Text>
+        <Text style={[styles.phone, { color: isDarkMode ? "#aaa" : "#666" }]}>
+          {contact.phoneNumber}
+        </Text>
       </View>
       <TouchableOpacity
         style={styles.deleteButton}
-        onPress={() => onDelete(contact.id)}
+        onPress={() => onDelete(contact.id as string)}
       >
         <Text style={styles.deleteText}>Delete</Text>
       </TouchableOpacity>
@@ -27,7 +32,6 @@ const ContactItem: React.FC<ContactItemProps> = ({ contact, onDelete }) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    backgroundColor: "white",
     borderRadius: 10,
     padding: 15,
     marginBottom: 10,
@@ -44,12 +48,10 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#333",
     marginBottom: 4,
   },
   phone: {
     fontSize: 16,
-    color: "#666",
   },
   deleteButton: {
     backgroundColor: "#FF5252",

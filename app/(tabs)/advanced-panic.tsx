@@ -16,6 +16,7 @@ import { StatusBar } from "expo-status-bar";
 import NetInfo from "@react-native-community/netinfo";
 import { useLocationStore } from "@/store/useLocationStore";
 import { useContactsStore } from "@/store/useContactStore";
+import { useThemeStore } from "@/store/useThemeStore";
 
 type AuthorityType = "police" | "hospital" | "fire";
 
@@ -25,6 +26,7 @@ interface Authority {
   phoneNumber: string;
   email: string;
   color: string;
+  darkColor?: string; // Add dark mode color
 }
 
 const authorities: Authority[] = [
@@ -34,6 +36,7 @@ const authorities: Authority[] = [
     phoneNumber: "08109251030",
     email: "www.chizihn@gmail.com",
     color: "#3F51B5",
+    darkColor: "#303F9F", // Darker shade for dark mode
   },
   {
     type: "hospital",
@@ -41,6 +44,7 @@ const authorities: Authority[] = [
     phoneNumber: "08109251030",
     email: "www.chizihn@gmail.com",
     color: "#E91E63",
+    darkColor: "#C2185B", // Darker shade for dark mode
   },
   {
     type: "fire",
@@ -48,12 +52,14 @@ const authorities: Authority[] = [
     phoneNumber: "08109251030",
     email: "www.chizihn@gmail.com",
     color: "#FF5722",
+    darkColor: "#E64A19", // Darker shade for dark mode
   },
 ];
 
 export default function AdvancedPanicScreen() {
   const { location, errorMsg } = useLocationStore();
   const { name, contacts } = useContactsStore();
+  const { theme, isDarkMode } = useThemeStore();
   const [isOnline, setIsOnline] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const router = useRouter();
@@ -138,17 +144,23 @@ export default function AdvancedPanicScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar style="auto" />
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <StatusBar style={isDarkMode ? "light" : "dark"} />
 
-      <View style={styles.header}>
+      <View
+        style={[styles.header, { backgroundColor: theme.headerBackground }]}
+      >
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
         >
-          <Text style={styles.backButtonText}>← Back</Text>
+          <Text style={[styles.backButtonText, { color: theme.headerText }]}>
+            ← Back
+          </Text>
         </TouchableOpacity>
-        <Text style={styles.title}>Advanced Emergency</Text>
+        <Text style={[styles.title, { color: theme.headerText }]}>
+          Advanced Emergency
+        </Text>
       </View>
 
       {!isOnline && (
@@ -160,8 +172,12 @@ export default function AdvancedPanicScreen() {
       )}
 
       <ScrollView style={styles.content}>
-        <Text style={styles.sectionTitle}>Contact Authorities</Text>
-        <Text style={styles.description}>
+        <Text style={[styles.sectionTitle, { color: theme.text }]}>
+          Contact Authorities
+        </Text>
+        <Text
+          style={[styles.description, { color: isDarkMode ? "#aaa" : "#666" }]}
+        >
           Select an emergency service to contact directly. This will send your
           current location and personal details.
         </Text>
@@ -172,7 +188,12 @@ export default function AdvancedPanicScreen() {
               key={authority.type}
               style={[
                 styles.authorityButton,
-                { backgroundColor: authority.color },
+                {
+                  backgroundColor:
+                    isDarkMode && authority.darkColor
+                      ? authority.darkColor
+                      : authority.color,
+                },
               ]}
               onPress={() => handleAuthorityPanic(authority)}
               disabled={isSending}
@@ -184,24 +205,39 @@ export default function AdvancedPanicScreen() {
 
         {isSending && (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#3F51B5" />
-            <Text style={styles.loadingText}>Sending alert...</Text>
+            <ActivityIndicator size="large" color={theme.primary} />
+            <Text style={[styles.loadingText, { color: theme.primary }]}>
+              Sending alert...
+            </Text>
           </View>
         )}
 
-        <View style={styles.statusContainer}>
-          <Text style={styles.statusLabel}>Status:</Text>
-          <Text style={styles.statusText}>
+        <View
+          style={[
+            styles.statusContainer,
+            { backgroundColor: isDarkMode ? "#1A1A2E" : "#e8eaf6" },
+          ]}
+        >
+          <Text style={[styles.statusLabel, { color: theme.text }]}>
+            Status:
+          </Text>
+          <Text
+            style={[styles.statusText, { color: isDarkMode ? "#ddd" : "#555" }]}
+          >
             {location
               ? "✅ Location available"
               : errorMsg
               ? `❌ ${errorMsg}`
               : "⏳ Getting location..."}
           </Text>
-          <Text style={styles.statusText}>
+          <Text
+            style={[styles.statusText, { color: isDarkMode ? "#ddd" : "#555" }]}
+          >
             {name ? `✅ User: ${name}` : "❌ Name not set"}
           </Text>
-          <Text style={styles.statusText}>
+          <Text
+            style={[styles.statusText, { color: isDarkMode ? "#ddd" : "#555" }]}
+          >
             {isOnline ? "✅ Online mode" : "⚠️ Offline mode"}
           </Text>
         </View>
@@ -213,21 +249,20 @@ export default function AdvancedPanicScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
-    padding: 20,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 20,
-    paddingTop: 30,
+    paddingTop: 60,
+    paddingHorizontal: 20,
+    paddingBottom: 15,
   },
   backButton: {
     padding: 8,
   },
   backButtonText: {
     fontSize: 16,
-    color: "#656565",
     fontWeight: "600",
   },
   title: {
@@ -239,16 +274,15 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    paddingHorizontal: 20,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
-    color: "#333",
   },
   description: {
     fontSize: 14,
-    color: "#666",
     marginBottom: 20,
     lineHeight: 22,
   },
@@ -281,12 +315,10 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 10,
-    color: "#3F51B5",
     fontSize: 16,
     fontWeight: "600",
   },
   statusContainer: {
-    backgroundColor: "#e8eaf6",
     padding: 15,
     borderRadius: 10,
     marginBottom: 20,
@@ -295,17 +327,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginBottom: 10,
-    color: "#333",
   },
   statusText: {
     fontSize: 14,
     marginBottom: 5,
-    color: "#555",
   },
   offlineWarning: {
     backgroundColor: "#ffccbc",
     padding: 10,
     borderRadius: 8,
+    marginHorizontal: 20,
     marginBottom: 15,
     alignItems: "center",
   },

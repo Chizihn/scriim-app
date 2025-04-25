@@ -1,5 +1,6 @@
 import React from "react";
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
+import { useThemeStore } from "@/store/useThemeStore";
 
 interface PanicButtonProps {
   onPress: () => void;
@@ -12,10 +13,13 @@ const PanicButton: React.FC<PanicButtonProps> = ({
   disabled = false,
   isActive = false,
 }) => {
+  const { theme } = useThemeStore();
+
   return (
     <TouchableOpacity
       style={[
         styles.button,
+        { backgroundColor: theme.primary },
         disabled && styles.buttonDisabled,
         isActive && styles.buttonActive,
       ]}
@@ -31,9 +35,8 @@ const PanicButton: React.FC<PanicButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: "#e74c3c",
-    width: 150,
-    height: 150,
+    width: 200,
+    height: 200,
     borderRadius: 75,
     justifyContent: "center",
     alignItems: "center",
